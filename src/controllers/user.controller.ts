@@ -17,14 +17,15 @@ passport.serializeUser(function(user: any, done) {
 }) 
 
 passport.deserializeUser(function(id, done) {
-    User.findById(id, function (err: any, user: UserType) {
+    User.findById(id, function(err: any, user: UserType) {
         done(err, user);
     })
 })
 
-// passport local strategy
-passport.use(new localStrategy(function(username, password, done) {
-    User.findOne({ username: username}, function (err: any, user: UserType) {
+// passport local strategies
+// login
+passport.use('login', new localStrategy(function(username, password, done) {
+    User.findOne({ username: username }, function (err: any, user: UserType) {
         if (err) return done(err);
         if (!user) return done(null, false, { message: 'Incorrect username or password.' });
 
@@ -34,6 +35,28 @@ passport.use(new localStrategy(function(username, password, done) {
 
             return done(null, user);
         })
+    })
+}))
+
+// register
+passport.use('register', new localStrategy(function(username, password, done) {
+    User.findOne({ username: username }, function (err: any, user: UserType) {
+        if (err) return done(err);
+        if (user) {
+            return done(null, false, { message: 'Username already taken.' });
+        } else {
+            const hashedPassword = bcrypt.hashSync(password, bcrypt.genSaltSync(SALT));
+            
+            let newUser = new User();
+            
+            newUser.username = username;
+            newUser.password = hashedPassword;
+
+            newUser.save(function(err) {
+                if (err) throw err;
+                return done(null, newUser);
+            })
+        }
     })
 }))
 
@@ -54,7 +77,6 @@ const isLoggedOut = (req: Request, res: Response, next: NextFunction) => {
 // login get route
 userRouter.get('/login', isLoggedOut, (req: Request, res: Response) => {
     const response = {
-        title: "login",
         error: req.query.error
     }
 
@@ -62,7 +84,7 @@ userRouter.get('/login', isLoggedOut, (req: Request, res: Response) => {
 })
 
 // login post route
-userRouter.post('/login', passport.authenticate('local', {
+userRouter.post('/login', passport.authenticate('login', {
     successRedirect: '/channels',
     failureRedirect: '/login?error=true'
 }))
@@ -81,6 +103,18 @@ userRouter.get('/', isLoggedIn, (req: Request, res: Response) => {
 })
 
 // new
+userRouter.get('/register', isLoggedOut, (req: Request, res: Response) => {
+    const response = {
+        error: req.query.error
+    }
+    res.render('users/register.ejs', { response });
+})
+
+userRouter.post('/register', passport.authenticate('register', {
+    successRedirect: '/login',
+    failureRedirect: '/register?error=true'
+}))
+
 // delete
 // update
 // create
