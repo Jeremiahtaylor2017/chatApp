@@ -91,7 +91,7 @@ userRouter.post('/login', passport.authenticate('login', {
 
 //logout get route
 userRouter.get('/logout', (req: Request, res: Response, next: NextFunction) => {
-    req.logout(function(err){
+    req.logout(function(err) {
         if (err) return next(err);
         res.redirect('/');
     });
