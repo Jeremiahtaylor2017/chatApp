@@ -3,6 +3,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import http from 'http';
 import { Server } from 'socket.io';
 import path from 'path';
+import methodOverride from 'method-override';
 import session from 'express-session';
 import passport from 'passport';
 import config from 'config';
@@ -11,7 +12,7 @@ import logger from './utils/logger';
 import morgan from 'morgan';
 
 import userRouter, { isLoggedIn } from './controllers/user.controller';
-import UserModel, { UserType } from './models/user.model';
+import User, { UserType } from './models/user.model';
 
 // initialize app
 const PORT = config.get<number>('PORT');
@@ -26,6 +27,7 @@ app.set('views', path.join(__dirname, '/views'));
 
 app.use(express.static('src/public'));
 app.use(express.urlencoded({ extended: false }));
+app.use(methodOverride('_method'));
 app.use(express.json());
 app.use(morgan('dev'));
 app.use(session({
@@ -43,8 +45,8 @@ app.use('/', userRouter);
 
 app.get('/channels/:username', isLoggedIn, (req: Request, res: Response) => {
     // res.render('channels/index.ejs');
-    UserModel.findById(req.params.username, (err: any, user: UserType) => {
-        res.render('channels/index.ejs', { user });
+    User.findOne({ username: req.params.username }, (err: any, user: UserType) => {
+        res.render('channels/index.ejs', { username: user.username });
     })
 })
 
