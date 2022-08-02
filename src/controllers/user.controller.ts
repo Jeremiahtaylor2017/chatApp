@@ -1,9 +1,10 @@
 // import dependencies
-import express, { Request, Response, NextFunction } from "express";
+import express, { Request, Response, NextFunction, response } from "express";
 import passport from 'passport';
 import { Strategy as localStrategy } from 'passport-local'
 import bcrypt from 'bcrypt';
 import config from 'config';
+import logger from '../utils/logger';
 
 import User, { UserType } from '../models/user.model';
 
@@ -84,10 +85,13 @@ userRouter.get('/login', isLoggedOut, (req: Request, res: Response) => {
 })
 
 // login post route
-userRouter.post('/login', passport.authenticate('login', {
-    successRedirect: '/channels',
-    failureRedirect: '/login?error=true'
-}))
+userRouter.post('/login', 
+    passport.authenticate('login', { failureRedirect: '/login?error=true' }), 
+    function (req: Request, res: Response) {
+    // @ts-ignore
+    // resolves error of username not being defined on req.user
+    res.redirect(`/channels/${req.user.username}`);
+})
 
 //logout get route
 userRouter.get('/logout', (req: Request, res: Response, next: NextFunction) => {
@@ -102,7 +106,8 @@ userRouter.get('/', isLoggedIn, (req: Request, res: Response) => {
     res.render('channels/index.ejs');
 })
 
-// new
+
+// new user route
 userRouter.get('/register', isLoggedOut, (req: Request, res: Response) => {
     const response = {
         error: req.query.error
@@ -110,17 +115,32 @@ userRouter.get('/register', isLoggedOut, (req: Request, res: Response) => {
     res.render('users/register.ejs', { response });
 })
 
-userRouter.post('/register', passport.authenticate('register', {
-    successRedirect: '/login',
-    failureRedirect: '/register?error=true'
-}))
 
 // delete
 // update
-// create
-// edit
-// show
 
+// create user route
+userRouter.post('/register', 
+    passport.authenticate('register', { failureRedirect: '/register?error=true' }), 
+    function (req: Request, res: Response) {
+    // @ts-ignore
+    // resolves error of username not being defined on req.user
+    res.redirect(`/channels/${req.user.username}`);
+})
+
+// edit
+
+// show
+userRouter.get('/profile/:id', (req: Request, res: Response) => {
+    User.findById(req.params.id, (err: any, user: UserType) => {
+        res.render('users/profile.ejs', { user });
+    })
+})
+
+// user test route
+userRouter.get('/whoami', (req: Request, res: Response) => {
+    res.send(req.user);
+})
 
 // setup admin user route
 userRouter.get('/setup', async (req: Request, res: Response, next: NextFunction) => {
@@ -132,7 +152,7 @@ userRouter.get('/setup', async (req: Request, res: Response, next: NextFunction)
 
     bcrypt.genSalt(SALT, function (err, salt) {
         if (err) return next(err);
-        bcrypt.hash("password", salt, function(err, hash) {
+        bcrypt.hash("admin", salt, function(err, hash) {
             if (err) return next(err);
 
             const newAdmin = new User<UserType>({
