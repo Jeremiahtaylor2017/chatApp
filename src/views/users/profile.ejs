@@ -7,6 +7,9 @@
     <title>chatApp</title>
 </head>
 <body>
-    <h1>Your username: <%= user.username %> </h1>
+    <h1>User Profile</h1>
+    <h3>Username: <%= username %></h3>
+    <a href="/profile/<%= username %>/edit">Edit profile</a>
+    <a href="/channels/<%= username  %>">Back</a>
 </body>
 </html>
