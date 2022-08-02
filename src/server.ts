@@ -11,6 +11,7 @@ import logger from './utils/logger';
 import morgan from 'morgan';
 
 import userRouter, { isLoggedIn } from './controllers/user.controller';
+import UserModel, { UserType } from './models/user.model';
 
 // initialize app
 const PORT = config.get<number>('PORT');
@@ -40,8 +41,11 @@ app.use(passport.session());
 // routes
 app.use('/', userRouter);
 
-app.get('/channels', isLoggedIn, (req: Request, res: Response) => {
-    res.render('channels/index.ejs');
+app.get('/channels/:username', isLoggedIn, (req: Request, res: Response) => {
+    // res.render('channels/index.ejs');
+    UserModel.findById(req.params.username, (err: any, user: UserType) => {
+        res.render('channels/index.ejs', { user });
+    })
 })
 
 
