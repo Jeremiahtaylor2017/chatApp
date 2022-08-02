@@ -1,11 +1,11 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
 
 export interface UserType {
     username: string,
     password: string
 }
 
-const userSchema = new mongoose.Schema<UserType>({
+const userSchema = new Schema<UserType>({
     username: {
         type: String,
         unique: true,
