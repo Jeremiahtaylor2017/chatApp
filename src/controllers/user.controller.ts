@@ -117,23 +117,73 @@ userRouter.get('/register', isLoggedOut, (req: Request, res: Response) => {
 
 
 // delete
+userRouter.delete('/profile/:username', (req: Request, res: Response) => {
+    User.findOneAndDelete({ username: req.params.username }, (err: any, user: UserType) => {
+        res.redirect('/login');
+    })
+})
+
 // update
+userRouter.put('/profile/:username', async (req: Request, res: Response) => {
+    const { newUsername, oldPassword, newPassword } = req.body;
+    
+    try {
+        const user = await User.findOne({ username: req.params.username });
+        const newUser = await User.findOne({ username: newUsername });
+        // logger.info(user);
+        if (newUser)  return res.redirect(`/profile/${req.params.username}/edit?error=true`);
+
+        if (user) {
+            const validPassword = await bcrypt.compare(oldPassword, user.password);
+
+            if (!validPassword) return res.redirect(`/profile/${req.params.username}/edit?error=true`);
+    
+            const hashedPassword = bcrypt.hashSync(newPassword, bcrypt.genSaltSync(SALT));
+
+            if (newUsername) {
+                user.username = newUsername;
+            } else {
+                user.username = user.username;
+            }
+
+            user.password = hashedPassword;
+
+            await user.save();
+
+            res.redirect(`/profile/${user.username}`);
+        }
+    } catch (err: any) {
+        throw err;
+    }
+})
 
 // create user route
 userRouter.post('/register', 
     passport.authenticate('register', { failureRedirect: '/register?error=true' }), 
     function (req: Request, res: Response) {
     // @ts-ignore
-    // resolves error of username not being defined on req.user
+    // resolves compile error of username not being defined on req.user
     res.redirect(`/channels/${req.user.username}`);
 })
 
 // edit
+userRouter.get('/profile/:username/edit', (req: Request, res: Response) => {
+    const response = {
+        error: req.query.error
+    }
+
+    User.findOne({ username: req.params.username }, (err: any, user: UserType) => {
+        res.render('users/edit.ejs', { user, response });
+    })
+})
 
 // show
-userRouter.get('/profile/:id', (req: Request, res: Response) => {
-    User.findById(req.params.id, (err: any, user: UserType) => {
-        res.render('users/profile.ejs', { user });
+userRouter.get('/profile/:username', (req: Request, res: Response) => {
+    User.findOne({ username: req.params.username }, (err: any, user: UserType) => {
+        // const request = {
+        //     user: user
+        // }
+        res.render('users/profile.ejs', { username: user.username });
     })
 })
 
