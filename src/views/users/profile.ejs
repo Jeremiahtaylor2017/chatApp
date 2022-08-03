@@ -4,12 +4,15 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/login.css">
     <title>chatApp</title>
 </head>
 <body>
-    <h1>User Profile</h1>
-    <h3>Username: <%= username %></h3>
-    <a href="/profile/<%= username %>/edit">Edit profile</a>
-    <a href="/channels/<%= username  %>">Back</a>
+    <div class="profile-container">
+        <h1>User Profile</h1>
+        <h3>Username: <%= username %></h3>
+        <a href="/profile/<%= username %>/edit">Edit profile</a>
+        <button onclick="history.back()">Back</button>
+    </div>
 </body>
 </html>

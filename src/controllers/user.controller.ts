@@ -1,5 +1,5 @@
 // import dependencies
-import express, { Request, Response, NextFunction, response } from "express";
+import express, { Request, Response, NextFunction } from "express";
 import passport from 'passport';
 import { Strategy as localStrategy } from 'passport-local'
 import bcrypt from 'bcrypt';
@@ -90,7 +90,7 @@ userRouter.post('/login',
     function (req: Request, res: Response) {
     // @ts-ignore
     // resolves error of username not being defined on req.user
-    res.redirect(`/channels/${req.user.username}`);
+    res.redirect('/channels');
 })
 
 //logout get route
@@ -117,14 +117,14 @@ userRouter.get('/register', isLoggedOut, (req: Request, res: Response) => {
 
 
 // delete
-userRouter.delete('/profile/:username', (req: Request, res: Response) => {
+userRouter.delete('/profile/:username', isLoggedIn, (req: Request, res: Response) => {
     User.findOneAndDelete({ username: req.params.username }, (err: any, user: UserType) => {
         res.redirect('/login');
     })
 })
 
 // update
-userRouter.put('/profile/:username', async (req: Request, res: Response) => {
+userRouter.put('/profile/:username', isLoggedIn, async (req: Request, res: Response) => {
     const { newUsername, oldPassword, newPassword } = req.body;
     
     try {
@@ -159,12 +159,7 @@ userRouter.put('/profile/:username', async (req: Request, res: Response) => {
 
 // create user route
 userRouter.post('/register', 
-    passport.authenticate('register', { failureRedirect: '/register?error=true' }), 
-    function (req: Request, res: Response) {
-    // @ts-ignore
-    // resolves compile error of username not being defined on req.user
-    res.redirect(`/channels/${req.user.username}`);
-})
+    passport.authenticate('register', { failureRedirect: '/register?error=true', successRedirect: '/channels' }))
 
 // edit
 userRouter.get('/profile/:username/edit', (req: Request, res: Response) => {
@@ -178,17 +173,14 @@ userRouter.get('/profile/:username/edit', (req: Request, res: Response) => {
 })
 
 // show
-userRouter.get('/profile/:username', (req: Request, res: Response) => {
+userRouter.get('/profile/:username', isLoggedIn, (req: Request, res: Response) => {
     User.findOne({ username: req.params.username }, (err: any, user: UserType) => {
-        // const request = {
-        //     user: user
-        // }
         res.render('users/profile.ejs', { username: user.username });
     })
 })
 
 // user test route
-userRouter.get('/whoami', (req: Request, res: Response) => {
+userRouter.get('/whoami', isLoggedIn, (req: Request, res: Response) => {
     res.send(req.user);
 })
 

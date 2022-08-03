@@ -4,33 +4,36 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/login.css">
     <title>Document</title>
 </head>
 <body>
-    <form action="/profile/<%= user.username%>?_method=PUT" method="post">
-        <div>
-            <% if (response.error) { %>
-             <p class="err-msg">Username taken or passwords do not match.</p>
-            <% } %>
-            <h1>Edit Profile</h1>
-        </div>
-        <div class="formGroup">
-            <label for="newUsername">New Username:</label>
-            <input type="text" name="newUsername" id="newUsername" placeholder="<%= user.username %> ">
-        </div>
-        <div class="formGroup">
-            <label for="oldPassword">Old Password:</label>
-            <input type="password" name="oldPassword" id="oldPassword" placeholder="Password" required>
-        </div>
-        <div class="formGroup">
-            <label for="newPassword">New Password:</label>
-            <input type="password" name="newPassword" id="newPassword" placeholder="New Password" required>
-        </div>
-        <input type="submit" value="Update">
-        <a href="/profile/<%= user.username %> ">Back</a>
-    </form>
-    <form action="/profile/<%= user.username %>?_method=DELETE" method="post">
-        <input type="submit" value="Delete Profile">
-    </form>
+    <div class="edit-container">
+        <form action="/profile/<%= user.username%>?_method=PUT" method="post">
+            <div>
+                <% if (response.error) { %>
+                 <p class="err-msg">Username taken or passwords do not match.</p>
+                <% } %>
+                <h1>Edit Profile</h1>
+            </div>
+            <div class="formGroup">
+                <label for="newUsername">New Username:</label>
+                <input type="text" name="newUsername" id="newUsername" placeholder="<%= user.username %> ">
+            </div>
+            <div class="formGroup">
+                <label for="oldPassword">Old Password:</label>
+                <input type="password" name="oldPassword" id="oldPassword" placeholder="Password" required>
+            </div>
+            <div class="formGroup">
+                <label for="newPassword">New Password:</label>
+                <input type="password" name="newPassword" id="newPassword" placeholder="New Password" required>
+            </div>
+            <input type="submit" value="Update">
+            <button onclick="history.back()">Back</button>
+        </form>
+        <form class="delete" action="/profile/<%= user.username %>?_method=DELETE" method="post">
+            <input type="submit" value="Delete Profile">
+        </form>
+    </div>
 </body>
 </html>
