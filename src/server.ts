@@ -6,7 +6,6 @@ import path from 'path';
 import methodOverride from 'method-override';
 import session from 'express-session';
 import passport from 'passport';
-import config from 'config';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 dotenv.config();
