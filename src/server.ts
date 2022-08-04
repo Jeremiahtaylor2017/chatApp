@@ -8,6 +8,8 @@ import session from 'express-session';
 import passport from 'passport';
 import config from 'config';
 import morgan from 'morgan';
+import dotenv from 'dotenv';
+dotenv.config();
 
 import dbConnect from './utils/connect';
 import logger from './utils/logger';
@@ -19,7 +21,7 @@ import User, { UserType } from './models/user.model';
 import Room, { RoomType } from './models/room.model';
 
 // initialize app
-const PORT = config.get<number>('PORT');
+const PORT = process.env.PORT || "3000";
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
