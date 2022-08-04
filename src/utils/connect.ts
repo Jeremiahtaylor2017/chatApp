@@ -1,11 +1,13 @@
 import mongoose from 'mongoose';
-import config from 'config';
+import dotenv from 'dotenv';
+dotenv.config();
 import logger from './logger';
 
 async function connect() {
-    const MONGO_URI = config.get<string>('MONGO_URI')
+    const MONGO_URI = process.env.MONGO_URI;
 
     try {
+        //@ts-ignore
         await mongoose.connect(MONGO_URI);
         logger.info('Connected to DB');
     } catch {

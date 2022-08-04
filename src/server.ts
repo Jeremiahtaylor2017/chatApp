@@ -25,8 +25,9 @@ const PORT = process.env.PORT || 3000;
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
-const SECRET = config.get<string>('SECRET');
+const SECRET = process.env.SECRET;
 const sessionMiddleware = session({
+    //@ts-ignore
     secret: SECRET,
     resave: false,
     saveUninitialized: false

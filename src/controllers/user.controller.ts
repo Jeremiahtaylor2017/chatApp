@@ -3,14 +3,14 @@ import express, { Request, Response, NextFunction } from "express";
 import passport from 'passport';
 import { Strategy as localStrategy } from 'passport-local'
 import bcrypt from 'bcrypt';
-import config from 'config';
+
 import logger from '../utils/logger';
 
 import User, { UserType } from '../models/user.model';
 
 // configuration
 const userRouter = express.Router();
-const SALT = config.get<number>("SALT")
+const SALT = 10;
 
 // passport configuration
 passport.serializeUser(function(user: any, done) {    
@@ -137,7 +137,7 @@ userRouter.put('/profile/:username', isLoggedIn, async (req: Request, res: Respo
             const validPassword = await bcrypt.compare(oldPassword, user.password);
 
             if (!validPassword) return res.redirect(`/profile/${req.params.username}/edit?error=true`);
-    
+            
             const hashedPassword = bcrypt.hashSync(newPassword, bcrypt.genSaltSync(SALT));
 
             if (newUsername) {
