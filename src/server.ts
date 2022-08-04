@@ -21,7 +21,7 @@ import User, { UserType } from './models/user.model';
 import Room, { RoomType } from './models/room.model';
 
 // initialize app
-const PORT = process.env.PORT || "3000";
+const PORT = process.env.PORT || "80";
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
