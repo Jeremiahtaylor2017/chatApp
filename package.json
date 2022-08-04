@@ -7,9 +7,7 @@
   "scripts": {
     "start": "node build/src/server.js",
     "dev": "nodemon src/server.ts",
-    "postinstall": "tsc && mv -i -v src/views build/src/ && rm -v -rf src",
-    "watch-ts": "tsc -w",
-    "deploy": "git add . && git commit -m Heroku && git push heroku master"
+    "postinstall": "tsc && mv -i -v src/views build/src/ && rm -v -rf src"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",
