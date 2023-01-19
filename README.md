@@ -19,7 +19,7 @@ A real time chat application using websockets.
 ![chat screen](https://i.imgur.com/blM9gb8.png)
 
 ### Getting Started
-[Click Here](https://chat-app-sei.herokuapp.com/) to see the deployed app!
+[Click Here](https://chatapp-production-405f.up.railway.app/) to see the deployed app!
 
 You can can send messages in real time to your friends by joining a room. User authentication with profile editing is available.
 
